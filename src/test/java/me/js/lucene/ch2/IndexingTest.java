@@ -71,8 +71,53 @@ public class IndexingTest {
             Document d = searcher.doc(sd.doc);
             System.out.println("Doc : " + sd.doc + " :: " + d.get("city"));
         }
-
     }
+
+    @Test
+    @DisplayName("2개 색인 후 검증 && 삭제하고 다시 검증")
+    void delete() throws IOException {
+        IndexSearcher indexSearcher = getIndexSearcher();
+        assertEquals(ids.length, indexSearcher.getIndexReader().maxDoc());
+        IndexWriter writer = getWriter();
+        writer.deleteAll();
+        writer.commit();
+        IndexSearcher indexSearcherAfterDelete = getIndexSearcher();
+        assertEquals(0, indexSearcherAfterDelete.getIndexReader().maxDoc());
+    }
+
+    @Test
+    @DisplayName("city : Amsterdam를 서울로 업데이트")
+    void update() throws IOException {
+        IndexSearcher searcher = getIndexSearcher();
+        Term t = new Term("city", "Amsterdam");
+        Query query = new TermQuery(t);
+        TopDocs foundDocs = searcher.search(query, 1);
+        for (ScoreDoc sd : foundDocs.scoreDocs) {
+            Document d = searcher.doc(sd.doc);
+            System.out.println("Doc : " + sd.doc + " id :" +d.get("id")+ " city : " + d.get("city"));
+        }
+
+        Document doc = new Document();
+        doc.add(new Field("id", "1", storedNoTokenizedType()));
+        doc.add(new Field("country", "한국", storedTokenizedType()));
+        doc.add(new TextField("contents", "새로 추가", Field.Store.NO));
+        doc.add(new TextField("city", "서울", Field.Store.YES));
+        IndexWriter writer = getWriter();
+        Term newTerm = new Term("city", "Amsterdam");
+        writer.updateDocument(newTerm, doc);
+        writer.commit();
+        writer.close();
+        IndexSearcher searcher2 = getIndexSearcher();
+        Query newQuery = new TermQuery(new Term("city", "서울"));
+
+        TopDocs foundDocs2 = searcher2.search(newQuery, 1);
+        for (ScoreDoc sd : foundDocs2.scoreDocs) {
+            Document d = searcher2.doc(sd.doc);
+            System.out.println("Doc : " + sd.doc + " id :" +d.get("id")+ " city : " + d.get("city"));
+        }
+    }
+
+
 
 
     private IndexSearcher getIndexSearcher() throws IOException {
