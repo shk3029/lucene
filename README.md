@@ -20,8 +20,6 @@
 
 # 루씬과 검색 애플리케이션 구조
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/90dd8fe0-6457-41b3-8fb8-4166b7658011/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/90dd8fe0-6457-41b3-8fb8-4166b7658011/Untitled.png)
-
 ### 검색 대상 텍스트 확보
 
 수집기를 사용해 색인할 대상 문서를 수집한다
